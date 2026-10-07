@@ -1,0 +1,26 @@
+# Virtuální prostředí
+venv/
+env/
+ENV/
+
+# Mezipaměť Pythonu
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Databáze (lokální SQLite soubory)
+*.db
+*.sqlite3
+
+# Konfigurační soubory s citlivými údaji (hesla, tokeny)
+.env
+
+# Nastavení editorů (VS Code / PyCharm)
+.vscode/
+.idea/
+
+# Výstupní nebo logovací soubory
+*.log
+dist/
+build/
