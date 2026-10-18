@@ -7,11 +7,14 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from data_input.adapters.manual_input import router as manual_input_router
+
 BASE_DIR = Path(__file__).resolve().parent
 # Keep the website files in the project's static directory.
 STATIC_DIR = BASE_DIR / "static"
 
 app = FastAPI(title="NutriGarmin API")
+app.include_router(manual_input_router)
 
 # Serve CSS, JavaScript, and other files from the static directory.
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
