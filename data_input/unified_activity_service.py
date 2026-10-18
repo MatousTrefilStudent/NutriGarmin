@@ -36,7 +36,8 @@ def save_activity_to_db(activity_data: UnifiedActivityData, db_session: Optional
         Dict containing execution status and saved data payload.
     """
 
-
+    #Temp solution for demonstration purposes (no actual DB operations):
+    print(f"DEBUG: Saving activity to DB: {activity_data.dict()}")
     
     # ------------------------------------------------------------------
     # Step A: Database Persistence (Production ORM Example)
@@ -55,8 +56,7 @@ def save_activity_to_db(activity_data: UnifiedActivityData, db_session: Optional
     # db_session.commit()
     # ------------------------------------------------------------------
 
-    #Temp solution for demonstration purposes (no actual DB operations):
-    print(f"DEBUG: Saving activity to DB: {activity_data.dict()}")
+
 
     # ------------------------------------------------------------------
     # Step B: Recalculate Daily Summary (DENNI_SOUHRN)

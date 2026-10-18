@@ -1,4 +1,3 @@
-import webbrowser
 from contextlib import asynccontextmanager
 from pathlib import Path
 from threading import Timer
@@ -7,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from data_input.adapters import manual_input
 from data_input.adapters.manual_input import router as manual_input_router
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -31,6 +31,7 @@ def read_root():
 if __name__ == "__main__":
     import uvicorn
 
+
     # Run the development server when this file is executed directly.
     uvicorn.run(
         "main:app",
@@ -40,3 +41,4 @@ if __name__ == "__main__":
         app_dir=str(BASE_DIR),
         reload_dirs=[str(BASE_DIR)],
     )
+

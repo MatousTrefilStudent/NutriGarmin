@@ -1,5 +1,4 @@
 from datetime import date
-from unittest.mock import Mock
 
 import pytest
 from pydantic import ValidationError
@@ -15,7 +14,11 @@ def test_manual_activity_returns_input_and_saves_it(monkeypatch):
         duration_minutes=30,
         calories_burned=300,
     )
-    save_activity = Mock()
+    saved_activities = []
+
+    def save_activity(saved_activity):
+        saved_activities.append(saved_activity)
+
     monkeypatch.setattr(
         manual_input.unified_activity_service,
         "save_activity_to_db",
@@ -26,7 +29,26 @@ def test_manual_activity_returns_input_and_saves_it(monkeypatch):
 
     assert response["message"] == "Manual activity added successfully"
     assert response["data"] == activity.model_dump()
-    save_activity.assert_called_once_with(activity)
+    assert saved_activities == [activity]
+
+
+def test_manual_activity_uses_service_and_prints_debug_message(capsys):
+    activity = manual_input.ManualActivityInput(
+        date=date(2026, 10, 18),
+        activity_type="Running",
+        duration_minutes=30,
+        calories_burned=300,
+    )
+
+    manual_input.add_manual_activity(activity)
+
+    captured = capsys.readouterr()
+    assert captured.out.strip() == (
+        "DEBUG: Saving activity to DB: "
+        "{'date': datetime.date(2026, 10, 18), 'activity_type': 'Running', "
+        "'duration_minutes': 30, 'calories_burned': 300}"
+    )
+    assert captured.err == ""
 
 
 def test_manual_activity_rejects_invalid_date():
