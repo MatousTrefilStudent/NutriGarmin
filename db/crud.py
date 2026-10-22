@@ -2,7 +2,10 @@ from datetime import date
 
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-import models, schemas
+try:
+    from db import models, schemas
+except ImportError:
+    import models, schemas
 
 
 def create_food_entry(db: Session, food: schemas.FoodCreate, user_id: int = 1):
@@ -32,7 +35,10 @@ def get_food_entries_by_date(db: Session, date_str: str, user_id: int = 1):
 
 
 if __name__=="__main__":
-    from database import SessionLocal, engine
+    try:
+        from db.database import SessionLocal, engine
+    except ImportError:
+        from database import SessionLocal, engine
     models.Base.metadata.create_all(bind=engine)
     db = SessionLocal()
 
