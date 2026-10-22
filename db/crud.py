@@ -29,3 +29,25 @@ def get_food_entries_by_date(db: Session, date_str: str, user_id: int = 1):
         models.FoodEntry.user_id == user_id,
         models.FoodEntry.date == date_str
     ).all()
+
+
+if __name__=="__main__":
+    from database import SessionLocal, engine
+    models.Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+
+    # Example usage
+    new_food = schemas.FoodCreate(
+        date="2026-10-17",
+        food_name="Apple",
+        amount_g=150,
+        calories_kcal=80,
+        protein_g=0.3,
+        carbs_g=21,
+        fat_g=0.2
+    )
+    create_food_entry(db, new_food)
+
+    entries = get_food_entries_by_date(db, "2026-10-17")
+    for entry in entries:
+        print(entry.food_name, entry.calories_kcal)

@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from database import Base
 
 class User(Base):
-    __tablename__ = "uzivatel"
+    __tablename__ = "user"
 
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
@@ -13,10 +13,10 @@ class User(Base):
     bmr = Column(Float)
 
 class FoodEntry(Base):
-    __tablename__ = "zaznam_stravy"
+    __tablename__ = "food_entry"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("uzivatel.id"), default=1)
+    user_id = Column(Integer, ForeignKey("user.id"), default=1)
     date = Column(String, index=True)  # YYYY-MM-DD
     food_name = Column(String)
     amount_g = Column(Float)
@@ -26,10 +26,10 @@ class FoodEntry(Base):
     fat_g = Column(Float, default=0.0)
 
 class ActivityRecord(Base):
-    __tablename__ = "garmin_aktivita"
+    __tablename__ = "activity_record"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("uzivatel.id"), default=1)
+    user_id = Column(Integer, ForeignKey("user.id"), default=1)
     date = Column(String, index=True)
     activity_type = Column(String)
     duration_seconds = Column(Integer)
@@ -37,10 +37,10 @@ class ActivityRecord(Base):
     avg_hr = Column(Integer, nullable=True)
 
 class DailySummary(Base):
-    __tablename__ = "denni_souhrn"
+    __tablename__ = "daily_summary"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("uzivatel.id"), default=1)
+    user_id = Column(Integer, ForeignKey("user.id"), default=1)
     date = Column(String, unique=True, index=True)
     total_intake_kcal = Column(Float, default=0.0)
     total_burned_kcal = Column(Float, default=0.0)
