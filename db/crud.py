@@ -34,6 +34,29 @@ def get_food_entries_by_date(db: Session, date_str: str, user_id: int = 1):
     ).all()
 
 
+def create_activity_record(db: Session, activity: schemas.ActivityCreate, user_id: int = 1):
+    """Inserts a new activity record into zaznam_aktivity."""
+    db_activity = models.ActivityRecord(
+        user_id=user_id,
+        date=activity.date,
+        activity_type=activity.activity_type,
+        duration_seconds=activity.duration_seconds,
+        burned_calories=activity.burned_calories,
+        avg_hr=activity.avg_hr
+    )
+    db.add(db_activity)
+    db.commit()
+    db.refresh(db_activity)
+    return db_activity
+
+def get_activity_records_by_date(db: Session, date_str: str, user_id: int = 1):
+    """Retrieves all activity records for a specific day."""
+    return db.query(models.ActivityRecord).filter(
+        models.ActivityRecord.user_id == user_id,
+        models.ActivityRecord.date == date_str
+    ).all()
+
+
 if __name__=="__main__":
     try:
         from db.database import SessionLocal, engine

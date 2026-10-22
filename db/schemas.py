@@ -21,3 +21,11 @@ class FoodResponse(FoodBase):
 
     class Config:
         from_attributes = True  # Pydantic v2 ORM mode
+
+
+class ActivityCreate(BaseModel):
+    date: str
+    activity_type: str
+    duration_seconds: int
+    burned_calories: float
+    avg_hr: Optional[int] = None
