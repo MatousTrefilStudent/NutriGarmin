@@ -19,7 +19,7 @@ router = APIRouter(prefix="/api/garmin", tags=["Manual Input"])
 class GarminActivityInput(BaseModel):
     date: date
     activity_type: str
-    duration_minutes: int
+    duration_seconds: int
     calories_burned: int
 
 
@@ -62,7 +62,7 @@ def sync_garmin_data(GARMIN_EMAIL: str, GARMIN_PASSWORD: str):
         temp= GarminActivityInput(
             date=i.get("startTimeLocal", "2026-10-17").split("T")[0],  # Extract date from datetime string
             activity_type=i.get("activityType", {}).get("typeKey", "unknown"),
-            duration_minutes=round(i.get("duration", 0) / 60, 1),
+            duration_seconds=i.get("duration", 0),
             calories_burned=i.get("calories", 0)
         )
         add_garmin_activity(temp)  # Save each activity to the database

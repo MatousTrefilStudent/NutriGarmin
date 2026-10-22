@@ -41,7 +41,7 @@ def create_activity_record(db: Session, activity: schemas.ActivityCreate, user_i
         date=activity.date,
         activity_type=activity.activity_type,
         duration_seconds=activity.duration_seconds,
-        burned_calories=activity.burned_calories,
+        calories_burned=activity.calories_burned,
         avg_hr=activity.avg_hr
     )
     db.add(db_activity)
