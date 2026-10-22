@@ -1,6 +1,7 @@
 from datetime import date
 from typing import Dict, Any, Optional
 from pydantic import BaseModel, Field
+from db import ActivityRecord 
 
 # ==========================================
 # 1. UNIFIED DATA MODEL
@@ -42,18 +43,16 @@ def save_activity_to_db(activity_data: UnifiedActivityData, db_session: Optional
     # ------------------------------------------------------------------
     # Step A: Database Persistence (Production ORM Example)
     # ------------------------------------------------------------------
-    # In production with SQLAlchemy, this looks like:
-    #
-    # db_activity = ActivityRecord(
-    #     user_id=current_user.id,
-    #     source=activity_data.source,
-    #     date=activity_data.date,
-    #     activity_name=activity_data.activity_name,
-    #     duration_minutes=activity_data.duration_minutes,
-    #     burned_kcal=activity_data.total_kcal
-    # )
-    # db_session.add(db_activity)
-    # db_session.commit()
+    db_activity = ActivityRecord(
+        user_id="tesst",
+        source=activity_data.source,
+        date=activity_data.date,
+        activity_name=activity_data.activity_name,
+        duration_minutes=activity_data.duration_minutes,
+        burned_kcal=activity_data.total_kcal
+    )
+    db_session.add(db_activity)
+    db_session.commit()
     # ------------------------------------------------------------------
 
 

@@ -1,0 +1,1 @@
+If some code calls hire codes, in .vscode/settings.json must be "python.terminal.executeInFileDir" changed to false 
