@@ -50,7 +50,9 @@ def sync_garmin_data(GARMIN_EMAIL: str, GARMIN_PASSWORD: str):
     client.login()
     print("Login successful!")
 
-    activities = client.get_activities_by_date("2026-10-17", "2026-10-17")  # Example date range; adjust as needed
+    activities = client.get_activities_by_date("2025-01-17", "2026-10-25")  # Example date range; adjust as needed
+
+    #activities = client.get_activities()
 
     saved_activities = []
     for i in activities:
