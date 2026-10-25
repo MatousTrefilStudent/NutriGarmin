@@ -96,9 +96,9 @@ def test_add_garmin_activity_returns_input_and_saves_it(monkeypatch):
 def test_sync_garmin_data_logs_in_and_maps_activities(monkeypatch):
     activities = [
         {
-            "startTimeLocal": "2026-10-17T08:30:00",
+            "startTimeLocal": "2026-10-17 19:14:02",
             "activityType": {"typeKey": "running"},
-            "duration": 1800,
+            "duration": 9022.275390625,
             "calories": 250,
         },
         {},
@@ -135,7 +135,7 @@ def test_sync_garmin_data_logs_in_and_maps_activities(monkeypatch):
         garmin_sync.GarminActivityInput(
             date=date(2026, 10, 17),
             activity_type="running",
-            seconds_of_duration=1800,
+            seconds_of_duration=9022,
             calories_burned=250,
         ),
         garmin_sync.GarminActivityInput(

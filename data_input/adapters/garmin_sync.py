@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from garminconnect import Garmin
 
 from fastapi import APIRouter
@@ -53,10 +55,11 @@ def sync_garmin_data(GARMIN_EMAIL: str, GARMIN_PASSWORD: str):
     saved_activities = []
     for i in activities:
         print(i)
+        start_time_local = i.get("startTimeLocal", "2026-10-17")
         activity = GarminActivityInput(
-            date=i.get("startTimeLocal", "2026-10-17").split("T")[0],  # Extract date from datetime string
+            date=datetime.fromisoformat(start_time_local).date(),
             activity_type=i.get("activityType", {}).get("typeKey", "unknown"),
-            seconds_of_duration=i.get("duration", 0),
+            seconds_of_duration=round(float(i.get("duration", 0))),
             calories_burned=i.get("calories", 0)
         )
         saved_activities.append(add_garmin_activity(activity))
