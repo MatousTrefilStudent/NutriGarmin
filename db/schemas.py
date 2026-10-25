@@ -5,11 +5,11 @@ from typing import Optional
 class FoodBase(BaseModel):
     date: str
     food_name: str
-    amount_g: float = Field(..., gt=0)
-    calories_kcal: float = Field(..., ge=0)
-    protein_g: float = 0.0
-    carbs_g: float = 0.0
-    fat_g: float = 0.0
+    grams_of_food: float = Field(..., gt=0)
+    calories_consumed: float = Field(..., ge=0)
+    grams_of_protein: float = 0.0
+    grams_of_carbs: float = 0.0
+    grams_of_fat: float = 0.0
 
 # Schema for creating food
 class FoodCreate(FoodBase):
@@ -26,6 +26,6 @@ class FoodResponse(FoodBase):
 class ActivityCreate(BaseModel):
     date: str
     activity_type: str
-    duration_seconds: int
-    burned_calories: float
-    avg_hr: Optional[int] = None
+    seconds_of_duration: int
+    calories_burned: float
+    beats_per_minute_average: Optional[int] = None

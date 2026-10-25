@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 from datetime import date
+
+from fastapi import APIRouter
+from db.schemas import FoodBase
 
 from data_input import unified_activity_service
 
@@ -15,19 +16,11 @@ router = APIRouter(prefix="/api/manual", tags=["Manual Input"])
 # 1. INPUT REQUEST PAYLOADS (Pydantic Models)
 # ==========================================
 
-class ManualActivityInput(BaseModel):
-    date: date
-    activity_type: str
-    duration_seconds: int
-    calories_burned: int
+class ManualActivityInput(unified_activity_service.UnifiedActivityData):
+    pass
 
-class ManualFoodInput(BaseModel):
+class ManualFoodInput(FoodBase):
     date: date
-    food_item: str
-    calories_consumed: int
-    protein_grams: float
-    carbs_grams: float
-    fat_grams: float
 
 
 # ==========================================
@@ -44,17 +37,17 @@ def add_manual_activity(activity: ManualActivityInput):
 
     # Here you would typically process the input and save it to a database or another service.
     # For demonstration, we will just return the received data.
-    return {"message": "Manual activity added successfully", "data": activity.dict()}
+    return {"message": "Manual activity added successfully", "data": activity.model_dump()}
 
 
 def main():
     """Save five example manual activities to the database."""
     activities = [
-        ManualActivityInput(date=date.today(), activity_type="Walking", duration_seconds=1800, calories_burned=150),
-        ManualActivityInput(date=date.today(), activity_type="Running", duration_seconds=1500, calories_burned=280),
-        ManualActivityInput(date=date.today(), activity_type="Cycling", duration_seconds=2700, calories_burned=350),
-        ManualActivityInput(date=date.today(), activity_type="Swimming", duration_seconds=2400, calories_burned=300),
-        ManualActivityInput(date=date.today(), activity_type="Strength training", duration_seconds=2100, calories_burned=220),
+        ManualActivityInput(date=date.today(), activity_type="Walking", seconds_of_duration=1800, calories_burned=150),
+        ManualActivityInput(date=date.today(), activity_type="Running", seconds_of_duration=1500, calories_burned=280),
+        ManualActivityInput(date=date.today(), activity_type="Cycling", seconds_of_duration=2700, calories_burned=350),
+        ManualActivityInput(date=date.today(), activity_type="Swimming", seconds_of_duration=2400, calories_burned=300),
+        ManualActivityInput(date=date.today(), activity_type="Strength training", seconds_of_duration=2100, calories_burned=220),
     ]
 
     for activity in activities:
@@ -63,4 +56,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -93,11 +93,11 @@ def test_create_and_retrieve_food_entry(db_session, sample_user):
         user_id=sample_user.id,
         date="2026-10-17",
         food_name="Oatmeal with Honey",
-        amount_g=200.0,
-        calories_kcal=250.0,
-        protein_g=8.0,
-        carbs_g=45.0,
-        fat_g=4.0,
+        grams_of_food=200.0,
+        calories_consumed=250.0,
+        grams_of_protein=8.0,
+        grams_of_carbs=45.0,
+        grams_of_fat=4.0,
     )
     db_session.add(food)
     db_session.commit()
@@ -109,29 +109,29 @@ def test_create_and_retrieve_food_entry(db_session, sample_user):
     assert queried.user_id == sample_user.id
     assert queried.date == "2026-10-17"
     assert queried.food_name == "Oatmeal with Honey"
-    assert queried.amount_g == 200.0
-    assert queried.calories_kcal == 250.0
-    assert queried.protein_g == 8.0
-    assert queried.carbs_g == 45.0
-    assert queried.fat_g == 4.0
+    assert queried.grams_of_food == 200.0
+    assert queried.calories_consumed == 250.0
+    assert queried.grams_of_protein == 8.0
+    assert queried.grams_of_carbs == 45.0
+    assert queried.grams_of_fat == 4.0
 
 
 def test_food_entry_default_values(db_session, sample_user):
-    """Verify default values for protein_g, carbs_g, fat_g, and user_id in FoodEntry."""
+    """Verify default nutrient gram values and user_id in FoodEntry."""
     food = FoodEntry(
         date="2026-10-17",
         food_name="Water",
-        amount_g=250.0,
-        calories_kcal=0.0,
+        grams_of_food=250.0,
+        calories_consumed=0.0,
     )
     db_session.add(food)
     db_session.commit()
     db_session.refresh(food)
 
     assert food.user_id == 1
-    assert food.protein_g == 0.0
-    assert food.carbs_g == 0.0
-    assert food.fat_g == 0.0
+    assert food.grams_of_protein == 0.0
+    assert food.grams_of_carbs == 0.0
+    assert food.grams_of_fat == 0.0
 
 
 def test_create_and_retrieve_activity_record(db_session, sample_user):
@@ -140,9 +140,9 @@ def test_create_and_retrieve_activity_record(db_session, sample_user):
         user_id=sample_user.id,
         date="2026-10-17",
         activity_type="running",
-        duration_seconds=3600,
-        burned_calories=600.0,
-        avg_hr=155,
+        seconds_of_duration=3600,
+        calories_burned=600.0,
+        beats_per_minute_average=155,
     )
     db_session.add(activity)
     db_session.commit()
@@ -154,26 +154,26 @@ def test_create_and_retrieve_activity_record(db_session, sample_user):
     assert queried.user_id == sample_user.id
     assert queried.date == "2026-10-17"
     assert queried.activity_type == "running"
-    assert queried.duration_seconds == 3600
-    assert queried.burned_calories == 600.0
-    assert queried.avg_hr == 155
+    assert queried.seconds_of_duration == 3600
+    assert queried.calories_burned == 600.0
+    assert queried.beats_per_minute_average == 155
 
 
-def test_activity_record_nullable_avg_hr_and_default_user(db_session, sample_user):
-    """Verify avg_hr is nullable and user_id defaults to 1."""
+def test_activity_record_nullable_beats_per_minute_average_and_default_user(db_session, sample_user):
+    """Verify average heart rate is nullable and user_id defaults to 1."""
     activity = ActivityRecord(
         date="2026-10-17",
         activity_type="walking",
-        duration_seconds=1800,
-        burned_calories=120.0,
-        avg_hr=None,
+        seconds_of_duration=1800,
+        calories_burned=120.0,
+        beats_per_minute_average=None,
     )
     db_session.add(activity)
     db_session.commit()
     db_session.refresh(activity)
 
     assert activity.user_id == 1
-    assert activity.avg_hr is None
+    assert activity.beats_per_minute_average is None
 
 
 def test_create_and_retrieve_daily_summary(db_session, sample_user):
@@ -181,9 +181,9 @@ def test_create_and_retrieve_daily_summary(db_session, sample_user):
     summary = DailySummary(
         user_id=sample_user.id,
         date="2026-10-17",
-        total_intake_kcal=2200.0,
-        total_burned_kcal=2400.0,
-        net_balance_kcal=-200.0,
+        calories_consumed=2200.0,
+        calories_burned=2400.0,
+        calories_net_balance=-200.0,
     )
     db_session.add(summary)
     db_session.commit()
@@ -193,22 +193,22 @@ def test_create_and_retrieve_daily_summary(db_session, sample_user):
     queried = db_session.query(DailySummary).filter_by(date="2026-10-17").first()
     assert queried is not None
     assert queried.user_id == sample_user.id
-    assert queried.total_intake_kcal == 2200.0
-    assert queried.total_burned_kcal == 2400.0
-    assert queried.net_balance_kcal == -200.0
+    assert queried.calories_consumed == 2200.0
+    assert queried.calories_burned == 2400.0
+    assert queried.calories_net_balance == -200.0
 
 
 def test_daily_summary_defaults(db_session, sample_user):
-    """Verify default values in DailySummary (user_id=1, and all kcal metrics default to 0.0)."""
+    """Verify default values in DailySummary (user_id=1 and calorie metrics default to 0.0)."""
     summary = DailySummary(date="2026-10-18")
     db_session.add(summary)
     db_session.commit()
     db_session.refresh(summary)
 
     assert summary.user_id == 1
-    assert summary.total_intake_kcal == 0.0
-    assert summary.total_burned_kcal == 0.0
-    assert summary.net_balance_kcal == 0.0
+    assert summary.calories_consumed == 0.0
+    assert summary.calories_burned == 0.0
+    assert summary.calories_net_balance == 0.0
 
 
 def test_daily_summary_unique_date_constraint(db_session, sample_user):

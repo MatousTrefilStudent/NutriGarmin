@@ -1,3 +1,5 @@
+from datetime import date
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -12,6 +14,7 @@ from db.crud import (
 )
 from db.models import ActivityRecord, FoodEntry
 from db.schemas import ActivityCreate, FoodCreate
+from data_input.unified_activity_service import UnifiedActivityData, save_activity_to_db
 
 
 @pytest.fixture
@@ -38,11 +41,11 @@ def sample_food_create():
     return FoodCreate(
         date="2026-10-17",
         food_name="Apple",
-        amount_g=150.0,
-        calories_kcal=80.0,
-        protein_g=0.3,
-        carbs_g=21.0,
-        fat_g=0.2,
+        grams_of_food=150.0,
+        calories_consumed=80.0,
+        grams_of_protein=0.3,
+        grams_of_carbs=21.0,
+        grams_of_fat=0.2,
     )
 
 
@@ -52,9 +55,9 @@ def sample_activity_create():
     return ActivityCreate(
         date="2026-10-17",
         activity_type="running",
-        duration_seconds=1800,
-        burned_calories=250.0,
-        avg_hr=155,
+        seconds_of_duration=1800,
+        calories_burned=250.0,
+        beats_per_minute_average=155,
     )
 
 
@@ -67,11 +70,11 @@ def test_create_food_entry_default_user(db_session, sample_food_create):
     assert created.user_id == 1
     assert created.date == sample_food_create.date
     assert created.food_name == sample_food_create.food_name
-    assert created.amount_g == sample_food_create.amount_g
-    assert created.calories_kcal == sample_food_create.calories_kcal
-    assert created.protein_g == sample_food_create.protein_g
-    assert created.carbs_g == sample_food_create.carbs_g
-    assert created.fat_g == sample_food_create.fat_g
+    assert created.grams_of_food == sample_food_create.grams_of_food
+    assert created.calories_consumed == sample_food_create.calories_consumed
+    assert created.grams_of_protein == sample_food_create.grams_of_protein
+    assert created.grams_of_carbs == sample_food_create.grams_of_carbs
+    assert created.grams_of_fat == sample_food_create.grams_of_fat
 
     # Verify directly from database
     persisted = db_session.query(FoodEntry).filter_by(id=created.id).first()
@@ -88,13 +91,28 @@ def test_create_activity_record_default_user(db_session, sample_activity_create)
     assert created.user_id == 1
     assert created.date == sample_activity_create.date
     assert created.activity_type == sample_activity_create.activity_type
-    assert created.duration_seconds == sample_activity_create.duration_seconds
-    assert created.burned_calories == sample_activity_create.burned_calories
-    assert created.avg_hr == sample_activity_create.avg_hr
+    assert created.seconds_of_duration == sample_activity_create.seconds_of_duration
+    assert created.calories_burned == sample_activity_create.calories_burned
+    assert created.beats_per_minute_average == sample_activity_create.beats_per_minute_average
 
     persisted = db_session.query(ActivityRecord).filter_by(id=created.id).first()
     assert persisted is not None
     assert persisted.activity_type == sample_activity_create.activity_type
+
+
+def test_unified_activity_service_persists_canonical_calorie_name(db_session):
+    activity = UnifiedActivityData(
+        date=date(2026, 10, 17),
+        activity_type="running",
+        seconds_of_duration=1800,
+        calories_burned=250.0,
+    )
+
+    created = save_activity_to_db(activity, db_session)
+
+    assert created.calories_burned == 250.0
+    persisted = db_session.query(ActivityRecord).filter_by(id=created.id).one()
+    assert persisted.calories_burned == 250.0
 
 
 def test_create_activity_record_custom_user_id(db_session, sample_activity_create):
@@ -118,22 +136,22 @@ def test_get_activity_records_by_date_filters_by_date_and_user(db_session):
         ActivityCreate(
             date=target_date,
             activity_type="running",
-            duration_seconds=1800,
-            burned_calories=250.0,
-            avg_hr=155,
+            seconds_of_duration=1800,
+            calories_burned=250.0,
+            beats_per_minute_average=155,
         ),
         ActivityCreate(
             date=target_date,
             activity_type="cycling",
-            duration_seconds=3600,
-            burned_calories=400.0,
-            avg_hr=140,
+            seconds_of_duration=3600,
+            calories_burned=400.0,
+            beats_per_minute_average=140,
         ),
         ActivityCreate(
             date="2026-10-18",
             activity_type="walking",
-            duration_seconds=900,
-            burned_calories=50.0,
+            seconds_of_duration=900,
+            calories_burned=50.0,
         ),
     ]
     create_activity_record(db_session, activities[0], user_id=1)
@@ -170,29 +188,29 @@ def test_get_food_entries_by_date_returns_matching_entries(db_session):
     food1 = FoodCreate(
         date="2026-10-17",
         food_name="Oatmeal",
-        amount_g=100.0,
-        calories_kcal=150.0,
-        protein_g=5.0,
-        carbs_g=27.0,
-        fat_g=2.5,
+        grams_of_food=100.0,
+        calories_consumed=150.0,
+        grams_of_protein=5.0,
+        grams_of_carbs=27.0,
+        grams_of_fat=2.5,
     )
     food2 = FoodCreate(
         date="2026-10-17",
         food_name="Banana",
-        amount_g=120.0,
-        calories_kcal=105.0,
-        protein_g=1.3,
-        carbs_g=27.0,
-        fat_g=0.3,
+        grams_of_food=120.0,
+        calories_consumed=105.0,
+        grams_of_protein=1.3,
+        grams_of_carbs=27.0,
+        grams_of_fat=0.3,
     )
     food_other_day = FoodCreate(
         date="2026-10-18",
         food_name="Chicken Breast",
-        amount_g=200.0,
-        calories_kcal=330.0,
-        protein_g=62.0,
-        carbs_g=0.0,
-        fat_g=7.2,
+        grams_of_food=200.0,
+        calories_consumed=330.0,
+        grams_of_protein=62.0,
+        grams_of_carbs=0.0,
+        grams_of_fat=7.2,
     )
 
     create_food_entry(db_session, food1, user_id=1)
@@ -220,14 +238,14 @@ def test_get_food_entries_by_date_filters_by_user_id(db_session):
     food_user1 = FoodCreate(
         date=target_date,
         food_name="Apple",
-        amount_g=150.0,
-        calories_kcal=80.0,
+        grams_of_food=150.0,
+        calories_consumed=80.0,
     )
     food_user2 = FoodCreate(
         date=target_date,
         food_name="Orange",
-        amount_g=130.0,
-        calories_kcal=60.0,
+        grams_of_food=130.0,
+        calories_consumed=60.0,
     )
 
     create_food_entry(db_session, food_user1, user_id=1)
@@ -249,9 +267,9 @@ def test_create_multiple_food_entries_and_verify_total_calories(db_session):
     """Verify total calories calculation over multiple entries inserted via crud."""
     target_date = "2026-10-17"
     foods = [
-        FoodCreate(date=target_date, food_name="Breakfast Eggs", amount_g=150.0, calories_kcal=210.0),
-        FoodCreate(date=target_date, food_name="Lunch Salad", amount_g=250.0, calories_kcal=350.0),
-        FoodCreate(date=target_date, food_name="Dinner Salmon", amount_g=200.0, calories_kcal=420.0),
+        FoodCreate(date=target_date, food_name="Breakfast Eggs", grams_of_food=150.0, calories_consumed=210.0),
+        FoodCreate(date=target_date, food_name="Lunch Salad", grams_of_food=250.0, calories_consumed=350.0),
+        FoodCreate(date=target_date, food_name="Dinner Salmon", grams_of_food=200.0, calories_consumed=420.0),
     ]
 
     for item in foods:
@@ -259,5 +277,5 @@ def test_create_multiple_food_entries_and_verify_total_calories(db_session):
 
     entries = get_food_entries_by_date(db_session, target_date, user_id=1)
     assert len(entries) == 3
-    total_calories = sum(e.calories_kcal for e in entries)
+    total_calories = sum(e.calories_consumed for e in entries)
     assert total_calories == pytest.approx(980.0)

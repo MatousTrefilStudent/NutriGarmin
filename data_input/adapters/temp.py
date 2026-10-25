@@ -30,14 +30,14 @@ def fetch_garmin_summary():
         stats = client.get_user_summary(today)
 
         print(stats)
-        bmr_calories = stats.get("bmrKilocalories", 0)
-        active_calories = stats.get("activeKilocalories", 0)
-        total_burned = stats.get("totalKilocalories", 0)
+        calories_bmr = stats.get("bmrKilocalories", 0)
+        calories_active = stats.get("activeKilocalories", 0)
+        calories_burned = stats.get("totalKilocalories", 0)
 
         print(f"\n--- Daily Summary for {today} ---")
-        print(f"Basal Metabolic Rate (BMR): {bmr_calories} kcal")
-        print(f"Active Calories Burned: {active_calories} kcal")
-        print(f"Total Daily Burned Calories: {total_burned} kcal")
+        print(f"Basal Metabolic Rate (BMR): {calories_bmr} kcal")
+        print(f"Active Calories Burned: {calories_active} kcal")
+        print(f"Total Daily Burned Calories: {calories_burned} kcal")
 
         # 5. Fetch specific workouts/activities for today
         activities = client.get_activities_by_date(today, today)
@@ -53,9 +53,9 @@ def fetch_garmin_summary():
 
         return {
             "date": today,
-            "bmr_kcal": bmr_calories,
-            "active_kcal": active_calories,
-            "total_burned_kcal": total_burned,
+            "calories_bmr": calories_bmr,
+            "calories_active": calories_active,
+            "calories_burned": calories_burned,
             "activities": activities
         }
 

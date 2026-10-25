@@ -1,8 +1,6 @@
 from garminconnect import Garmin
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from datetime import date
+from fastapi import APIRouter
 
 from data_input import unified_activity_service
 
@@ -16,11 +14,8 @@ router = APIRouter(prefix="/api/garmin", tags=["Manual Input"])
 # 1. INPUT REQUEST PAYLOADS (Pydantic Models)
 # ==========================================
 
-class GarminActivityInput(BaseModel):
-    date: date
-    activity_type: str
-    duration_seconds: int
-    calories_burned: int
+class GarminActivityInput(unified_activity_service.UnifiedActivityData):
+    pass
 
 
 # ==========================================
@@ -38,7 +33,7 @@ def add_garmin_activity(activity: GarminActivityInput):
 
     # Here you would typically process the input and save it to a database or another service.
     # For demonstration, we will just return the received data.
-    return {"message": "Manual activity added successfully", "data": activity.dict()}
+    return {"message": "Manual activity added successfully", "data": activity.model_dump()}
 
 
 def sync_garmin_data(GARMIN_EMAIL: str, GARMIN_PASSWORD: str):
@@ -62,10 +57,9 @@ def sync_garmin_data(GARMIN_EMAIL: str, GARMIN_PASSWORD: str):
         temp= GarminActivityInput(
             date=i.get("startTimeLocal", "2026-10-17").split("T")[0],  # Extract date from datetime string
             activity_type=i.get("activityType", {}).get("typeKey", "unknown"),
-            duration_seconds=i.get("duration", 0),
+            seconds_of_duration=i.get("duration", 0),
             calories_burned=i.get("calories", 0)
         )
         add_garmin_activity(temp)  # Save each activity to the database
         print(temp)
         
-

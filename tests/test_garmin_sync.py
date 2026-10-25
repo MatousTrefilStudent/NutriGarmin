@@ -48,7 +48,7 @@ def test_garmin_connect_login_succeeds(monkeypatch, capsys):
         garmin_sync.GarminActivityInput(
             date=date(2026, 10, 17),
             activity_type="running",
-            duration_minutes=30,
+            seconds_of_duration=1800,
             calories_burned=250,
         )
     ]
@@ -59,13 +59,13 @@ def test_garmin_activity_input_parses_date():
     activity = garmin_sync.GarminActivityInput(
         date="2026-10-17",
         activity_type="running",
-        duration_minutes=30,
+        seconds_of_duration=1800,
         calories_burned=250,
     )
 
     assert activity.date == date(2026, 10, 17)
     assert activity.activity_type == "running"
-    assert activity.duration_minutes == 30
+    assert activity.seconds_of_duration == 1800
     assert activity.calories_burned == 250
 
 
@@ -74,7 +74,7 @@ def test_garmin_activity_input_rejects_invalid_date():
         garmin_sync.GarminActivityInput(
             date="not-a-date",
             activity_type="running",
-            duration_minutes=30,
+            seconds_of_duration=1800,
             calories_burned=250,
         )
 
@@ -83,7 +83,7 @@ def test_add_garmin_activity_returns_input_and_saves_it(monkeypatch):
     activity = garmin_sync.GarminActivityInput(
         date=date(2026, 10, 17),
         activity_type="running",
-        duration_minutes=30,
+        seconds_of_duration=1800,
         calories_burned=250,
     )
     saved_activities = []
@@ -146,13 +146,13 @@ def test_sync_garmin_data_logs_in_and_maps_activities(monkeypatch):
         garmin_sync.GarminActivityInput(
             date=date(2026, 10, 17),
             activity_type="running",
-            duration_minutes=30,
+            seconds_of_duration=1800,
             calories_burned=250,
         ),
         garmin_sync.GarminActivityInput(
             date=date(2026, 10, 17),
             activity_type="unknown",
-            duration_minutes=0,
+            seconds_of_duration=0,
             calories_burned=0,
         ),
     ]

@@ -14,11 +14,11 @@ def create_food_entry(db: Session, food: schemas.FoodCreate, user_id: int = 1):
         user_id=user_id,
         date=food.date,
         food_name=food.food_name,
-        amount_g=food.amount_g,
-        calories_kcal=food.calories_kcal,
-        protein_g=food.protein_g,
-        carbs_g=food.carbs_g,
-        fat_g=food.fat_g
+        grams_of_food=food.grams_of_food,
+        calories_consumed=food.calories_consumed,
+        grams_of_protein=food.grams_of_protein,
+        grams_of_carbs=food.grams_of_carbs,
+        grams_of_fat=food.grams_of_fat
     )
     db.add(db_food)
     db.commit()
@@ -40,9 +40,9 @@ def create_activity_record(db: Session, activity: schemas.ActivityCreate, user_i
         user_id=user_id,
         date=activity.date,
         activity_type=activity.activity_type,
-        duration_seconds=activity.duration_seconds,
+        seconds_of_duration=activity.seconds_of_duration,
         calories_burned=activity.calories_burned,
-        avg_hr=activity.avg_hr
+        beats_per_minute_average=activity.beats_per_minute_average
     )
     db.add(db_activity)
     db.commit()
@@ -69,14 +69,14 @@ if __name__=="__main__":
     new_food = schemas.FoodCreate(
         date="2026-10-17",
         food_name="Apple",
-        amount_g=150,
-        calories_kcal=80,
-        protein_g=0.3,
-        carbs_g=21,
-        fat_g=0.2
+        grams_of_food=150,
+        calories_consumed=80,
+        grams_of_protein=0.3,
+        grams_of_carbs=21,
+        grams_of_fat=0.2
     )
     create_food_entry(db, new_food)
 
     entries = get_food_entries_by_date(db, "2026-10-17")
     for entry in entries:
-        print(entry.food_name, entry.calories_kcal)
+        print(entry.food_name, entry.calories_consumed)
