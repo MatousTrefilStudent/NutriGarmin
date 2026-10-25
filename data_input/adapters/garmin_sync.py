@@ -31,9 +31,7 @@ def add_garmin_activity(activity: GarminActivityInput):
 
     unified_activity_service.save_activity_to_db(activity)
 
-    # Here you would typically process the input and save it to a database or another service.
-    # For demonstration, we will just return the received data.
-    return {"message": "Manual activity added successfully", "data": activity.model_dump()}
+    return {"message": "Garmin activity added successfully", "data": activity.model_dump()}
 
 
 def sync_garmin_data(GARMIN_EMAIL: str, GARMIN_PASSWORD: str):
@@ -52,14 +50,17 @@ def sync_garmin_data(GARMIN_EMAIL: str, GARMIN_PASSWORD: str):
 
     activities = client.get_activities_by_date("2026-10-17", "2026-10-17")  # Example date range; adjust as needed
 
+    saved_activities = []
     for i in activities:
         print(i)
-        temp= GarminActivityInput(
+        activity = GarminActivityInput(
             date=i.get("startTimeLocal", "2026-10-17").split("T")[0],  # Extract date from datetime string
             activity_type=i.get("activityType", {}).get("typeKey", "unknown"),
             seconds_of_duration=i.get("duration", 0),
             calories_burned=i.get("calories", 0)
         )
-        add_garmin_activity(temp)  # Save each activity to the database
-        print(temp)
+        saved_activities.append(add_garmin_activity(activity))
+        print(activity)
+
+    return saved_activities
         

@@ -1,6 +1,4 @@
 from datetime import date
-from getpass import getpass
-
 import pytest
 from pydantic import ValidationError
 
@@ -9,6 +7,7 @@ from data_input.adapters import garmin_sync
 
 def test_garmin_connect_login_succeeds(monkeypatch, capsys):
     """Needs to be run manually using: .\venv\Scripts\python.exe -m pytest -s tests\test_garmin_sync.py::test_garmin_connect_login_succeeds"""
+    print("inputing")
     email = input("Garmin Connect email: ")
     password = input("Garmin Connect password: ")
 
@@ -20,7 +19,7 @@ def test_garmin_connect_login_succeeds(monkeypatch, capsys):
             "calories": 250,
         }
     ]
-    saved_activities = []
+    sync_results = []
 
     def get_activities_by_date(_client, start_date, end_date):
         assert (start_date, end_date) == ("2026-10-17", "2026-10-17")
@@ -31,11 +30,7 @@ def test_garmin_connect_login_succeeds(monkeypatch, capsys):
         "get_activities_by_date",
         get_activities_by_date,
     )
-    monkeypatch.setattr(
-        garmin_sync.unified_activity_service,
-        "save_activity_to_db",
-        saved_activities.append,
-    )
+
 
     garmin_sync.sync_garmin_data(email, password)
 
@@ -44,16 +39,10 @@ def test_garmin_connect_login_succeeds(monkeypatch, capsys):
     assert "Login successful!" in output
     assert str(activities[0]) in output
     assert "activity_type='running'" in output
-    assert saved_activities == [
-        garmin_sync.GarminActivityInput(
-            date=date(2026, 10, 17),
-            activity_type="running",
-            seconds_of_duration=1800,
-            calories_burned=250,
-        )
-    ]
+
 """.\venv\Scripts\python.exe -m pytest -s tests\test_garmin_sync.py::test_garmin_connect_login_succeeds"""
-"""passed"""
+""""""
+"""passed 25.10.2026"""
 
 def test_garmin_activity_input_parses_date():
     activity = garmin_sync.GarminActivityInput(
@@ -99,7 +88,7 @@ def test_add_garmin_activity_returns_input_and_saves_it(monkeypatch):
 
     response = garmin_sync.add_garmin_activity(activity)
 
-    assert response["message"] == "Manual activity added successfully"
+    assert response["message"] == "Garmin activity added successfully"
     assert response["data"] == activity.model_dump()
     assert saved_activities == [activity]
 
@@ -115,7 +104,7 @@ def test_sync_garmin_data_logs_in_and_maps_activities(monkeypatch):
         {},
     ]
     client_calls = []
-    saved_activities = []
+    persisted_activities = []
 
     class FakeGarmin:
         def __init__(self, email, password):
@@ -130,19 +119,19 @@ def test_sync_garmin_data_logs_in_and_maps_activities(monkeypatch):
 
     monkeypatch.setattr(garmin_sync, "Garmin", FakeGarmin)
     monkeypatch.setattr(
-        garmin_sync,
-        "add_garmin_activity",
-        saved_activities.append,
+        garmin_sync.unified_activity_service,
+        "save_activity_to_db",
+        persisted_activities.append,
     )
 
-    garmin_sync.sync_garmin_data("user@example.com", "secret")
+    sync_results = garmin_sync.sync_garmin_data("user@example.com", "secret")
 
     assert client_calls == [
         ("init", "user@example.com", "secret"),
         ("login",),
         ("get_activities_by_date", "2026-10-17", "2026-10-17"),
     ]
-    assert saved_activities == [
+    expected_activities = [
         garmin_sync.GarminActivityInput(
             date=date(2026, 10, 17),
             activity_type="running",
@@ -156,6 +145,10 @@ def test_sync_garmin_data_logs_in_and_maps_activities(monkeypatch):
             calories_burned=0,
         ),
     ]
+    assert [item["data"] for item in sync_results] == [
+        activity.model_dump() for activity in expected_activities
+    ]
+    assert persisted_activities == expected_activities
 
 
 def test_sync_garmin_data_propagates_login_errors(monkeypatch):
