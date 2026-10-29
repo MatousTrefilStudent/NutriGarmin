@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f4f7f5">
+    <title>Synchronizace Garmin | NutriConnect</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <p class="brand">NUTRICONNECT</p>
+        <a class="back-link" href="/">Zpět na přehled</a>
+    </header>
+
+    <main>
+        <p class="eyebrow">Garmin Connect</p>
+        <h2>Synchronizace aktivit</h2>
+        <p class="intro">
+            Zadejte přihlašovací údaje ke Garmin Connect a období, za které chcete aktivity načíst.
+        </p>
+
+        <section class="card" aria-label="Přihlašovací údaje a období synchronizace">
+            <form id="garmin-sync-form">
+                <div class="field">
+                    <label for="garmin-email">E-mail ke Garmin Connect</label>
+                    <input
+                        id="garmin-email"
+                        name="email"
+                        type="email"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="garmin-password">Heslo</label>
+                    <input
+                        id="garmin-password"
+                        name="password"
+                        type="password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <fieldset class="date-range">
+                    <legend>Období aktivit</legend>
+                    <div class="field">
+                        <label for="date-start">Od</label>
+                        <input id="date-start" name="date_start" type="date" required>
+                    </div>
+                    <div class="field">
+                        <label for="date-end">Do</label>
+                        <input id="date-end" name="date_end" type="date" required>
+                    </div>
+                </fieldset>
+
+                <p class="hint">
+                    Formulář zatím není propojen se synchronizační službou. Zadané údaje se
+                    neodesílají ani neukládají.
+                </p>
+                <button class="submit-button" id="sync-button" type="submit">
+                    <span id="button-label">Synchronizovat aktivity</span>
+                    <span class="spinner" id="button-spinner" aria-hidden="true" hidden></span>
+                </button>
+                <p class="notice" id="sync-status" role="status" aria-live="polite" hidden></p>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const form = document.querySelector("#garmin-sync-form");
+        const status = document.querySelector("#sync-status");
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            status.textContent = "Synchronizace zatím není dostupná. Údaje nebyly odeslány.";
+            status.hidden = false;
+        });
+    </script>
+</body>
+</html>

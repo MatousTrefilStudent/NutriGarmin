@@ -28,6 +28,11 @@ def read_root():
     return FileResponse(STATIC_DIR / "index.html")
 
 
+@app.get("/synchronize.html", response_class=FileResponse)
+def read_synchronize():
+    return FileResponse(STATIC_DIR / "synchronize.html")
+
+
 if __name__ == "__main__":
     import uvicorn
 
@@ -41,4 +46,3 @@ if __name__ == "__main__":
         app_dir=str(BASE_DIR),
         reload_dirs=[str(BASE_DIR)],
     )
-

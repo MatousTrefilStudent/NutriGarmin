@@ -3,33 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriGarmin / FitNutri Sync</title>
-    <!-- Zde by se v budoucnu vložil odkaz na Tailwind CSS a Chart.js -->
+    <meta name="theme-color" content="#f4f7f5">
+    <meta
+        name="description"
+        content="Denní přehled energetické bilance a makroživin v NutriConnect."
+    >
+    <title>Denní přehled | NutriConnect</title>
+    <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <header>
-        <h1>NUTRICONNECT / FITNUTRI SYNC</h1>
-        <button>Profil</button>
-        <button>Synchronizovat</button>
+    <header class="topbar">
+        <p class="brand">NUTRICONNECT</p>
+        <nav aria-label="Hlavní navigace">
+            <a class="primary-link" href="/synchronize.html">
+                Synchronizovat Garmin
+            </a>
+        </nav>
     </header>
 
-    <main>
-        <h2>DENNÍ PŘEHLED</h2>
-        
-        <section id="energeticka-bilance">
-            <h3>ENERGETICKÁ BILANCE</h3>
-            <p>Příjem (Jídlo): <span id="prijem">0</span> kcal</p>
-            <p>Výdej (Garmin): <span id="vydej">0</span> kcal</p>
-            <h4>BILANCE: <span id="bilance">0</span> kcal</h4>
-        </section>
+    <main class="dashboard-main">
+        <header>
+            <p class="eyebrow">Nutriční přehled</p>
+            <h2>Denní přehled</h2>
+            <p class="intro">
+                Na jednom místě najdete svůj energetický příjem, výdej i přehled makroživin.
+            </p>
+        </header>
 
-        <section id="makroziviny">
-            <h3>MAKROŽIVINY</h3>
-            <!-- Zde se později pomocí Chart.js vykreslí grafy -->
-            <p>Bílkoviny: 0/150 g</p>
-            <p>Sacharidy: 0/220 g</p>
-            <p>Tuky: 0/70 g</p>
-        </section>
+        <div class="dashboard-grid">
+            <section
+                class="card dashboard-card"
+                id="energeticka-bilance"
+                aria-labelledby="energy-heading"
+            >
+                <h3 id="energy-heading">ENERGETICKÁ BILANCE</h3>
+                <p class="metric">
+                    <span>Příjem z jídla</span>
+                    <strong><span id="prijem">0</span> kcal</strong>
+                </p>
+                <p class="metric">
+                    <span>Výdej z Garminu</span>
+                    <strong><span id="vydej">0</span> kcal</strong>
+                </p>
+                <p class="balance">
+                    <span>Bilance</span>
+                    <strong><span id="bilance">0</span> kcal</strong>
+                </p>
+            </section>
+
+            <section
+                class="card dashboard-card"
+                id="makroziviny"
+                aria-labelledby="macros-heading"
+            >
+                <h3 id="macros-heading">MAKROŽIVINY</h3>
+                <ul class="macros-list">
+                    <li>
+                        <span>Bílkoviny</span>
+                        <strong>0 / 150 g</strong>
+                    </li>
+                    <li>
+                        <span>Sacharidy</span>
+                        <strong>0 / 220 g</strong>
+                    </li>
+                    <li>
+                        <span>Tuky</span>
+                        <strong>0 / 70 g</strong>
+                    </li>
+                </ul>
+            </section>
+        </div>
     </main>
 </body>
 </html>

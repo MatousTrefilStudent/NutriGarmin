@@ -36,7 +36,7 @@ def add_garmin_activity(activity: GarminActivityInput):
     return {"message": "Garmin activity added successfully", "data": activity.model_dump()}
 
 
-def sync_garmin_data(GARMIN_EMAIL: str, GARMIN_PASSWORD: str):
+def sync_garmin_data(GARMIN_EMAIL: str, GARMIN_PASSWORD: str, date_start: str = "2025-01-17", date_end: str = "2026-10-25"):
     """
     Function to sync data from Garmin Connect.
     This function can be called periodically or triggered by an event.
@@ -50,9 +50,8 @@ def sync_garmin_data(GARMIN_EMAIL: str, GARMIN_PASSWORD: str):
     client.login()
     print("Login successful!")
 
-    activities = client.get_activities_by_date("2025-01-17", "2026-10-25")  # Example date range; adjust as needed
+    activities = client.get_activities_by_date(date_start, date_end)
 
-    #activities = client.get_activities()
 
     saved_activities = []
     for i in activities:
