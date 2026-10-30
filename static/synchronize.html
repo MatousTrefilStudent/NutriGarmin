@@ -57,8 +57,7 @@
                 </fieldset>
 
                 <p class="hint">
-                    Formulář zatím není propojen se synchronizační službou. Zadané údaje se
-                    neodesílají ani neukládají.
+                    Přihlašovací údaje slouží výhradně k jednorázovému načtení aktivit z vašeho účtu Garmin Connect a neukládají se.
                 </p>
                 <button class="submit-button" id="sync-button" type="submit">
                     <span id="button-label">Synchronizovat aktivity</span>
@@ -72,11 +71,86 @@
     <script>
         const form = document.querySelector("#garmin-sync-form");
         const status = document.querySelector("#sync-status");
+        const syncButton = document.querySelector("#sync-button");
+        const buttonLabel = document.querySelector("#button-label");
+        const buttonSpinner = document.querySelector("#button-spinner");
+        const dateStartInput = document.querySelector("#date-start");
+        const dateEndInput = document.querySelector("#date-end");
 
-        form.addEventListener("submit", (event) => {
+        // Nastavení výchozích dat, pokud nejsou vyplněna: konec = dnes, začátek = před 7 dny
+        const today = new Date();
+        const weekAgo = new Date();
+        weekAgo.setDate(today.getDate() - 7);
+
+        const formatDate = (d) => d.toISOString().split("T")[0];
+
+        if (!dateEndInput.value) {
+            dateEndInput.value = formatDate(today);
+        }
+        if (!dateStartInput.value) {
+            dateStartInput.value = formatDate(weekAgo);
+        }
+
+        form.addEventListener("submit", async (event) => {
             event.preventDefault();
-            status.textContent = "Synchronizace zatím není dostupná. Údaje nebyly odeslány.";
+
+            const email = document.querySelector("#garmin-email").value.trim();
+            const password = document.querySelector("#garmin-password").value;
+            const date_start = dateStartInput.value;
+            const date_end = dateEndInput.value;
+
+            if (!email || !password || !date_start || !date_end) {
+                status.textContent = "Vyplňte prosím všechna povinná pole.";
+                status.className = "notice notice-error";
+                status.hidden = false;
+                return;
+            }
+
+            if (date_start > date_end) {
+                status.textContent = "Počáteční datum nesmí být novější než koncové datum.";
+                status.className = "notice notice-error";
+                status.hidden = false;
+                return;
+            }
+
+            // Indikace načítání
+            syncButton.disabled = true;
+            buttonSpinner.hidden = false;
+            buttonLabel.textContent = "Probíhá synchronizace...";
+            status.textContent = "Připojování ke Garmin Connect a stahování aktivit. Může to chvíli trvat...";
+            status.className = "notice";
             status.hidden = false;
+
+            try {
+                const response = await fetch("/api/garmin/sync", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        date_start: date_start,
+                        date_end: date_end
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.detail || `Chyba serveru (${response.status})`);
+                }
+
+                status.innerHTML = `Synchronizace byla úspěšná! Do databáze bylo uloženo <strong>${data.count}</strong> aktivit. <a href="/" style="text-decoration: underline; font-weight: bold; margin-left: 0.5rem;">Zpět na přehled &rarr;</a>`;
+                status.className = "notice notice-success";
+            } catch (error) {
+                status.textContent = `Synchronizace se nezdařila: ${error.message}`;
+                status.className = "notice notice-error";
+            } finally {
+                syncButton.disabled = false;
+                buttonSpinner.hidden = true;
+                buttonLabel.textContent = "Synchronizovat aktivity";
+            }
         });
     </script>
 </body>

@@ -286,3 +286,15 @@ a:focus-visible {
         animation-iteration-count: 1 !important;
     }
 }
+
+.notice-success {
+    background: #eef5f1;
+    color: #247653;
+    border: 1px solid #b8dfcb;
+}
+
+.notice-error {
+    background: #fdf2f2;
+    color: #b3261e;
+    border: 1px solid #f8c8c6;
+}

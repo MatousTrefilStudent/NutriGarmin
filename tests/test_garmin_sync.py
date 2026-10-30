@@ -5,6 +5,7 @@ from pydantic import ValidationError
 from data_input.adapters import garmin_sync
 
 
+@pytest.mark.skip(reason="Manual interactive test: requires stdin via pytest -s")
 def test_garmin_connect_login_succeeds(monkeypatch, capsys):
     """Needs to be run manually using: .\venv\Scripts\python.exe -m pytest -s tests\test_garmin_sync.py::test_garmin_connect_login_succeeds"""
     print("inputing")
@@ -163,3 +164,31 @@ def test_sync_garmin_data_propagates_login_errors(monkeypatch):
 
     with pytest.raises(RuntimeError, match="Garmin login failed"):
         garmin_sync.sync_garmin_data("user@example.com", "secret")
+
+
+def test_garmin_sync_route_is_registered():
+    from main import app
+    operation = app.openapi()["paths"]["/api/garmin/sync"]
+    assert "post" in operation
+
+
+def test_sync_activities_endpoint(monkeypatch):
+    called = []
+
+    def fake_sync(GARMIN_EMAIL, GARMIN_PASSWORD, date_start, date_end):
+        called.append((GARMIN_EMAIL, GARMIN_PASSWORD, date_start, date_end))
+        return [{"message": "Garmin activity added successfully", "data": {}}]
+
+    monkeypatch.setattr(garmin_sync, "sync_garmin_data", fake_sync)
+
+    payload = garmin_sync.GarminSyncRequest(
+        email="test@example.com",
+        password="pass",
+        date_start="2026-10-01",
+        date_end="2026-10-10",
+    )
+    result = garmin_sync.sync_activities(payload)
+
+    assert result["status"] == "success"
+    assert result["count"] == 1
+    assert called == [("test@example.com", "pass", "2026-10-01", "2026-10-10")]

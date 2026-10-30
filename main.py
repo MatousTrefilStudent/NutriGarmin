@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.requests import Request
 
 from data_input.adapters import manual_input
+from data_input.adapters.garmin_sync import router as garmin_sync_router
 from data_input.adapters.manual_input import router as manual_input_router
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -16,6 +17,7 @@ STATIC_DIR = BASE_DIR / "static"
 
 app = FastAPI(title="NutriGarmin API")
 app.include_router(manual_input_router)
+app.include_router(garmin_sync_router)
 
 # Prevent browsers from caching files during development
 @app.middleware("http")
