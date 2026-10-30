@@ -3,7 +3,7 @@ from pathlib import Path
 from threading import Timer
 
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.requests import Request
 
@@ -38,9 +38,14 @@ def read_root():
     return FileResponse(STATIC_DIR / "index.html")
 
 
-@app.get("/synchronize.html", response_class=FileResponse)
+@app.get("/synchronize", response_class=FileResponse)
 def read_synchronize():
     return FileResponse(STATIC_DIR / "synchronize.html")
+
+
+@app.get("/synchronize.html")
+def redirect_synchronize():
+    return RedirectResponse(url="/synchronize")
 
 
 if __name__ == "__main__":
